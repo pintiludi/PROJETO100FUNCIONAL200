@@ -1,10 +1,14 @@
 export default async function handler(req, res) {
-  if (req.method === "POST") {
-    console.log("Recebeu webhook do Mercado Pago:", req.body);
-    // Você pode salvar ou processar os dados aqui depois
-    return res.status(200).send("Webhook recebido com sucesso");
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método não permitido' });
   }
 
-  res.setHeader("Allow", ["POST"]);
-  res.status(405).end(`Method ${req.method} Not Allowed`);
+  try {
+    console.log('🔔 Webhook recebido:', req.body);
+
+    res.status(200).json({ received: true });
+  } catch (error) {
+    console.error('Erro no webhook:', error);
+    res.status(500).json({ error: 'Erro interno no servidor' });
+  }
 }
